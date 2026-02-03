@@ -1,3 +1,4 @@
+git push origin main
 # Quick Command Reference
 
 ## 🚀 Quick Start (Copy & Paste)

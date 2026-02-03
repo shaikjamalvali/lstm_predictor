@@ -400,7 +400,7 @@ class GlucosePredictor:
         
         return recommendation
     
-    def generate_comprehensive_report(self, input_sequence, current_time, 
+    def generate_comprehensive_report(self, input_sequence, current_glucose, current_time, 
                                      carb_intake=0, time_of_day='breakfast',
                                      activity_level='moderate'):
         """
@@ -409,7 +409,9 @@ class GlucosePredictor:
         Parameters:
         -----------
         input_sequence: array-like
-            Historical data for prediction
+            Historical data for prediction (12 timesteps, 9 features)
+        current_glucose: float
+            Current glucose level in mg/dL
         current_time: str
             Current time for context
         carb_intake: float
@@ -424,9 +426,11 @@ class GlucosePredictor:
         report: dict
             Comprehensive report with all recommendations
         """
-        # Get current values from last row
+        # Get current values from last row (unscale the features)
         last_values = input_sequence[-1]
-        current_glucose = self.scaler_y.inverse_transform([[last_values[0]]])[0][0]
+        
+        # Unscale heart rate and steps from the input features
+        # Features order: calories, heart_rate, steps, basal_rate, bolus, carb_input, hour, day_of_week, minute
         heart_rate = last_values[1] * (self.scaler_X.data_max_[1] - self.scaler_X.data_min_[1]) + self.scaler_X.data_min_[1]
         steps = last_values[2] * (self.scaler_X.data_max_[2] - self.scaler_X.data_min_[2]) + self.scaler_X.data_min_[2]
         
